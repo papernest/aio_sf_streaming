@@ -3,12 +3,23 @@ aio-sf-streaming
 
 .. image:: https://badge.fury.io/py/aio-sf-streaming.svg
     :target: https://badge.fury.io/py/aio-sf-streaming
+    :alt: Last release
 
 .. image:: https://travis-ci.org/papernest-public/aio_sf_streaming.svg?branch=master
     :target: https://travis-ci.org/papernest-public/aio_sf_streaming
+    :alt: Build
 
 .. image:: https://coveralls.io/repos/github/papernest-public/aio_sf_streaming/badge.svg
     :target: https://coveralls.io/github/papernest-public/aio_sf_streaming
+    :alt: Coverage
+
+.. image:: https://requires.io/github/papernest-public/aio_sf_streaming/requirements.svg?branch=master
+    :target: https://requires.io/github/papernest-public/aio_sf_streaming/requirements/?branch=master
+    :alt: Requirements Status
+
+.. image:: https://img.shields.io/badge/License-MIT-yellow.svg
+    :target: https://opensource.org/licenses/MIT
+    :alt: MIT license
 
 *aio-sf-streaming* is a simple Python 3.6 asyncio library allowing to connect
 and receive live notifications from Salesforce. This library is provided to
