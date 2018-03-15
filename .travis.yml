@@ -6,7 +6,7 @@ before_install:
 install:
 - pip install .[dev]
 script:
-- pytest tests/
+- pytest --cov aio_sf_streaming/ tests/
 after_success:
 - coveralls
 
