@@ -13,6 +13,10 @@ aio-sf-streaming
     :target: https://coveralls.io/github/papernest-public/aio_sf_streaming
     :alt: Coverage
 
+.. image:: https://api.codeclimate.com/v1/badges/e0c891514893bdd4c22f/maintainability
+   :target: https://codeclimate.com/github/papernest-public/aio_sf_streaming/maintainability
+   :alt: Maintainability
+
 .. image:: https://requires.io/github/papernest-public/aio_sf_streaming/requirements.svg?branch=master
     :target: https://requires.io/github/papernest-public/aio_sf_streaming/requirements/?branch=master
     :alt: Requirements Status
