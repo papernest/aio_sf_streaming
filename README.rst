@@ -1,7 +1,10 @@
-aio_sf_streaming
+aio-sf-streaming
 ================
 
-*aio_sf_streaming* is a simple Python 3.6 asyncio library allowing to connect
+.. image:: https://badge.fury.io/py/aio-sf-streaming.svg
+    :target: https://badge.fury.io/py/aio-sf-streaming
+
+*aio-sf-streaming* is a simple Python 3.6 asyncio library allowing to connect
 and receive live notifications from Salesforce. This library is provided to
 you by `papernest <http://www.papernest.com>`_.
 
@@ -21,7 +24,7 @@ Feature
   `Force.com documentation <https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/using_streaming_api_stateless.htm>`_
   for more information).
 
-*aio_sf_streaming* only support Python 3.6 for now.
+*aio-sf-streaming* only support Python 3.6 for now.
 
 
 Getting started
@@ -30,6 +33,7 @@ Getting started
 Simple use case:
 
 .. code-block:: python
+
     import asyncio
     from aio_sf_streaming import SimpleSalesforceStreaming
 
@@ -63,7 +67,7 @@ Simply use ``pip``:
 
 .. code-block:: bash
 
-    $ pip install aio_sf_streaming
+    $ pip install aio-sf-streaming
 
 
 Documentation
@@ -89,5 +93,5 @@ Release history
 License
 =======
 
-``aio_sf_streaming`` is offered under the MIT license.
+``aio-sf-streaming`` is offered under the MIT license.
 
