@@ -1,8 +1,12 @@
 language: python
 python:
 - 3.6
+before_install:
+- pip install -q coveralls
 install:
 - pip install .[dev]
 script:
 - pytest tests/
+after_success:
+- coveralls
 

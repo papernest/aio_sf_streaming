@@ -25,6 +25,8 @@ REQUIRED = [
 ]
 DEV_REQUIRED = [
     'pytest>=3,<4',
+    'pytest-cov',
+    'coverage',
     'pytest-asyncio',
     'asynctest']
 
