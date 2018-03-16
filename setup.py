@@ -29,7 +29,8 @@ DEV_REQUIRED = [
     'coverage',
     'pytest-asyncio',
     'asynctest',
-    'sphinx']
+    'sphinx',
+    'sphinx-autobuild']
 
 
 here = os.path.abspath(os.path.dirname(__file__))
