@@ -5,6 +5,10 @@ aio-sf-streaming
     :target: https://badge.fury.io/py/aio-sf-streaming
     :alt: Last release
 
+.. image:: https://readthedocs.org/projects/aio-sf-streaming/badge/?version=latest
+    :target: http://aio-sf-streaming.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
 .. image:: https://travis-ci.org/papernest-public/aio_sf_streaming.svg?branch=master
     :target: https://travis-ci.org/papernest-public/aio_sf_streaming
     :alt: Build
