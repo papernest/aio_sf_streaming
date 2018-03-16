@@ -12,10 +12,12 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+# Insert aio_sf_streaming in system path
+sys.path.insert(0, os.path.abspath('..'))
 
+import aio_sf_streaming
 
 # -- Project information -----------------------------------------------------
 
@@ -24,9 +26,9 @@ copyright = '2018, Christophe GABARD / papernest.com'
 author = 'Christophe GABARD / papernest.com'
 
 # The short X.Y version
-version = ''
+version = aio_sf_streaming.__version__
 # The full version, including alpha/beta/rc tags
-release = '0.1.0'
+release = aio_sf_streaming.__version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -41,6 +43,8 @@ release = '0.1.0'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
+    'sphinxcontrib.asyncio',
+    'sphinx_autodoc_typehints',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -157,4 +161,24 @@ texinfo_documents = [
 ]
 
 
+# If true, the current module name will be prepended to all description
+# unit titles (such as .. function::).
+add_module_names = True
+
+# If true, links to the reST sources are added to the pages.
+html_show_sourcelink = True
+
+# If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
+html_show_sphinx = False
+
+# If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
+html_show_copyright = True
+
 # -- Extension configuration -------------------------------------------------
+from sphinx.ext.autodoc import (
+    ClassLevelDocumenter, InstanceAttributeDocumenter)
+
+def iad_add_directive_header(self, sig):
+    ClassLevelDocumenter.add_directive_header(self, sig)
+
+InstanceAttributeDocumenter.add_directive_header = iad_add_directive_header

@@ -24,13 +24,18 @@ REQUIRED = [
     'aiohttp>=3,<4',
 ]
 DEV_REQUIRED = [
+    # Tests
     'pytest>=3,<4',
     'pytest-cov',
-    'coverage',
     'pytest-asyncio',
     'asynctest',
+    'coverage',
+    # Doc
     'sphinx',
-    'sphinx-autobuild']
+    'sphinx-autobuild',
+    'sphinxcontrib-asyncio',
+    'sphinx_autodoc_typehints',
+]
 
 
 here = os.path.abspath(os.path.dirname(__file__))

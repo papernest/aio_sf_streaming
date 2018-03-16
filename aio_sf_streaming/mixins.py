@@ -2,9 +2,12 @@
 Mixins module: Provide various mixins modules
 """
 import asyncio
+import datetime
 import enum
 import logging
+from typing import Union
 
+from .core import JSONObject, JSONList
 from .utils import parse_sf_datetime
 
 logger = logging.getLogger('aio_sf_streaming')
@@ -12,12 +15,13 @@ logger = logging.getLogger('aio_sf_streaming')
 
 class TimeoutAdviceMixin:
     """
-    Simple mixin that set timeout setting according to SF advice if provided
+    Simple mixin that automatically set timeout setting according to SF
+    advice, if provided.
     """
 
-    async def messages(self):
+    async def messages(self) -> JSONObject:
         """
-            Return all messages and retrieve timeout advice if available
+        See :py:func:`BaseSalesforceStreaming.messages`
         """
         async for message in super().messages():
             if (message.get('channel', '') == '/meta/connect'
@@ -30,32 +34,32 @@ class TimeoutAdviceMixin:
 
 class ReplayType(enum.Enum):
     """
-    Special replay values
+    Enumeration with special replay values
     """
-    ALL_EVENTS = -2
-    NEW_EVENTS = -1
+    ALL_EVENTS = -2     #: Replay all events available.
+    NEW_EVENTS = -1     #: No replay, retrieve only new events.
 
 
 class ReplayMixin:
     """
     Mixing adding replay support to the streaming client.
 
-    This mixin is not enough, you must implement ``store_replay_id`` and
-    ``get_last_replay_id`` in a subclass in order to have a working replay.
+    This mixin is not enough, you must implement :py:func:`ReplayMixin.store_replay_id` and
+    `:py:func:`ReplayMixin.get_last_replay_id` in a subclass in order to have a working replay.
     """
 
-    async def get_handshake_payload(self):
+    async def get_handshake_payload(self) -> JSONObject:
         """
-        Provide the handshake payload
+        See :py:func:`BaseSalesforceStreaming.get_handshake_payload`
         """
         payload = await super().get_handshake_payload()
         # Activate replay extension
         payload.setdefault('ext', {}).update({'replay': True})
         return payload
 
-    async def get_subscribe_payload(self, channel):
+    async def get_subscribe_payload(self, channel: str) -> JSONObject:
         """
-        Provide the subscription payload for a specific channel
+        See :py:func:`BaseSalesforceStreaming.get_subscribe_payload`
         """
         payload = await super().get_subscribe_payload(channel)
 
@@ -77,9 +81,9 @@ class ReplayMixin:
 
         return payload
 
-    async def messages(self):
+    async def messages(self) -> JSONObject:
         """
-            Return all message
+        See :py:func:`BaseSalesforceStreaming.messages`
         """
         async for message in super().messages():
             channel = message['channel']
@@ -96,27 +100,36 @@ class ReplayMixin:
                     self.store_replay_id(channel, replay_id, creation_time))
             yield message
 
-    async def store_replay_id(self, channel, replay_id, creation_time):
+    async def store_replay_id(self, channel: str, replay_id: int,
+                              creation_time: datetime.datetime) -> None:
         """
-        Callback called to store a replay id
+        Callback called to store a replay id. You should override this method
+        to implement your custom logic.
+
+        :param channel: Channel name
+        :param replay_id: replay id to store
+        :param creation_time: Creation time. You should store only the last
+            created object but you can not know if you received event in order
+            without this.
         """
 
-    async def get_last_replay_id(self, channel):
+    async def get_last_replay_id(self, channel: str) -> Union[ReplayType, int]:
         """
-        Callback called to retrieve a replay id
+        Callback called to retrieve a replay id. You should override this method
+        to implement your custom logic.
+
+        :param channel: Channel name
         """
 
 
 class AutoVersionMixin:
     """
-    Simple mixin that fetch last api version before connect
+    Simple mixin that fetch last api version before connect.
     """
 
-    async def handshake(self):
+    async def handshake(self) -> JSONList:
         """
-        Coroutine that perform an handshake (mandatory before any other action)
-
-        Fetch last api version on startup.
+        See :py:func:`BaseSalesforceStreaming.handshake`
         """
         # Get last api version
         data = await self.get('/services/data/')
@@ -139,23 +152,23 @@ class AutoReconnectMixin:
         # Used to store all subscribed channels
         self._subchannels = None
 
-    async def start(self):
+    async def start(self) -> None:
         """
-        Helper method doing all starting call
+        See :py:func:`BaseSalesforceStreaming.start`
         """
         self._subchannels = set()
         await super().start()
 
-    async def subscribe(self, channel):
+    async def subscribe(self, channel: str) -> JSONList:
         """
-        Subscribe to a channel
+        See :py:func:`BaseSalesforceStreaming.subscribe`
         """
         self._subchannels.add(channel)
         return await super().subscribe(channel)
 
-    async def messages(self):
+    async def messages(self) -> JSONObject:
         """
-        Return all messages
+        See :py:func:`BaseSalesforceStreaming.messages`
         """
         async for message in super().messages():
             channel = message['channel']
@@ -169,23 +182,23 @@ class AutoReconnectMixin:
 
             yield message
 
-    async def unsubscribe(self, channel):
+    async def unsubscribe(self, channel: str) -> JSONList:
         """
-        Unsubscribe to a channel
+        See :py:func:`BaseSalesforceStreaming.unsubscribe`
         """
         self._subchannels.remove(channel)
         return await super().unsubscribe(channel)
 
-    async def stop(self):
+    async def stop(self) -> None:
         """
-        Helper method doing all stopping call
+        See :py:func:`BaseSalesforceStreaming.stop`
         """
         await super().stop()
         self._subchannels = None
 
-    async def handshake(self):
+    async def handshake(self) -> JSONList:
         """
-        Coroutine that perform an handshake (mandatory before any other action)
+        See :py:func:`BaseSalesforceStreaming.handshake`
         """
         response = await super().handshake()
 
@@ -199,14 +212,17 @@ class AutoReconnectMixin:
 class ReSubscribeMixin:
     """
     Mixin that handle subscription error, will try again after a short delay
+
+    :param retry_sub_duration: Duration between subscribe retry if server is
+        too buzy.
     """
-    def __init__(self, retry_sub_duration=0.1, **kwargs):
+    def __init__(self, retry_sub_duration: float = 0.1, **kwargs):
         super().__init__(**kwargs)
         self.retry_sub_duration = retry_sub_duration
 
-    async def subscribe(self, channel):
+    async def subscribe(self, channel: str) -> JSONList:
         """
-        Subscribe to a channel and retry after a short duration if asked by SF
+        See :py:func:`BaseSalesforceStreaming.subscribe`
         """
         while True:
             response = await super().subscribe(channel)
@@ -221,3 +237,14 @@ class ReSubscribeMixin:
                                .startswith('SERVER_UNAVAILABLE')):
                 return response
             await asyncio.sleep(self.retry_sub_duration)
+
+
+class AllMixin(
+        TimeoutAdviceMixin,             # Use SF timeout advice
+        AutoVersionMixin,               # Auto-fetch last api version
+        ReplayMixin,                    # Add replay support
+        AutoReconnectMixin,             # Add auto-reconnection feature
+        ReSubscribeMixin):              # Handle subscription errors
+    """
+    Helper class to add all mixin with one class
+    """

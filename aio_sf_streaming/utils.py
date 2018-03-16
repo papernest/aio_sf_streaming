@@ -5,7 +5,7 @@ import datetime
 import re
 
 
-def parse_sf_datetime(str_date):
+def parse_sf_datetime(str_date: str) -> datetime.datetime:
     """
     Convert provided date from sf to datetime
     """
