@@ -28,7 +28,8 @@ DEV_REQUIRED = [
     'pytest-cov',
     'coverage',
     'pytest-asyncio',
-    'asynctest']
+    'asynctest',
+    'sphinx']
 
 
 here = os.path.abspath(os.path.dirname(__file__))
