@@ -105,6 +105,18 @@ features. The only planned feature is the addition of the OAuth2 browser flow
 `refresh_token` for authentication instead of user name and passwords.
 
 
+Contributing
+------------
+
+If you find any problem, feel free to fill an issue. Pull-Request are also
+welcomed.
+
+You can install development dependencies with:
+
+.. code-block:: bash
+
+    $ pip install -e .[dev]
+
 Release history
 ---------------
 
