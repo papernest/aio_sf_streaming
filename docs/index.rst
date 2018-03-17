@@ -47,7 +47,7 @@ Salesforce organization.
             async for message in client.events():
                 channel = message['channel']
                 print(f"Message received on {channel} : {message}")
-  
+
     loop = asyncio.get_event_loop()
     loop.run_until_complete(print_event())
 
@@ -58,7 +58,7 @@ Salesforce organization.
 - Subscribe to push topics and custom events
 - Receive events pushed by Salesforce
 - Auto-reconnect after too many time of inactivity
-- Replay support: replay events missed while your client is disconnected (see 
+- Replay support: replay events missed while your client is disconnected (see
   `Force.com documentation <https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/using_streaming_api_stateless.htm>`_
   for more information).
 
@@ -71,6 +71,7 @@ User Guide
    :maxdepth: 2
 
    user/intro
+   user/quickstart
 
 
 Reference Documentation
@@ -80,3 +81,4 @@ Reference Documentation
    :maxdepth: 2
 
    api
+   release

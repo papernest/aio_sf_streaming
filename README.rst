@@ -76,7 +76,7 @@ Simple use case:
                 print(message)
                 # client will wait indefinitely, you can ask to exit
                 if message['channel'] == '/topic/Bar':
-                    await client.ask_stop()
+                    break
                 else:
                     # You can unsubscribe when you want, too
                     await client.unsubscribe('/topic/Foo')
@@ -124,7 +124,7 @@ You can install development dependencies with:
 Release history
 ---------------
 
-**v. 0.1**: Initial release
+**v. 0.1.0**: Initial release
 
 
 License
