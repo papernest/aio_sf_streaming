@@ -4,7 +4,7 @@ python:
 before_install:
 - pip install -q coveralls
 install:
-- pip install .[dev]
+- pip install .[tests]
 script:
 - pytest --cov aio_sf_streaming/ tests/
 after_success:
