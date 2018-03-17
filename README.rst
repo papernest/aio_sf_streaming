@@ -124,7 +124,8 @@ You can install development dependencies with:
 Release history
 ---------------
 
-**v. 0.1.0**: Initial release
+- **v. 0.1.1**: Add documentation and initial typing information.
+- **v. 0.1.0**: Initial release.
 
 
 License
