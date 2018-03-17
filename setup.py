@@ -23,14 +23,13 @@ VERSION = None
 REQUIRED = [
     'aiohttp>=3,<4',
 ]
-DEV_REQUIRED = [
-    # Tests
+TESTS_REQUIRED = [
     'pytest>=3,<4',
     'pytest-cov',
     'pytest-asyncio',
     'asynctest',
-    'coverage',
-    # Doc
+    'coverage']
+DOCS_REQUIRED = [
     'sphinx',
     'sphinx-autobuild',
     'sphinxcontrib-asyncio',
@@ -104,7 +103,7 @@ setup(
     url=URL,
     packages=find_packages(exclude=('tests',)),
     install_requires=REQUIRED,
-    extras_require={'dev': DEV_REQUIRED},
+    extras_require={'tests': TESTS_REQUIRED, 'docs': DOCS_REQUIRED},
     include_package_data=True,
     license='MIT',
     classifiers=[

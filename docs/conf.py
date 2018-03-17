@@ -175,10 +175,3 @@ html_show_sphinx = False
 html_show_copyright = True
 
 # -- Extension configuration -------------------------------------------------
-from sphinx.ext.autodoc import (
-    ClassLevelDocumenter, InstanceAttributeDocumenter)
-
-def iad_add_directive_header(self, sig):
-    ClassLevelDocumenter.add_directive_header(self, sig)
-
-InstanceAttributeDocumenter.add_directive_header = iad_add_directive_header

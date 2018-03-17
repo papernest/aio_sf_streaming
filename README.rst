@@ -119,7 +119,7 @@ You can install development dependencies with:
 
 .. code-block:: bash
 
-    $ pip install -e .[dev]
+    $ pip install -e .[tests,docs]
 
 Release history
 ---------------
