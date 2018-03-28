@@ -42,14 +42,15 @@ Feature
 -------
 
 - `asyncio <https://docs.python.org/3/library/asyncio.html>`_ compatible library
+- Authentication with username/password or refresh token
 - Subscribe to push topics and custom events
 - Receive events pushed by Salesforce
 - Auto-reconnect after too many time of inactivity
-- Replay support: replay events missed while your client is disconnected (see 
+- Replay support: replay events missed while your client is disconnected (see
   `Force.com documentation <https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/using_streaming_api_stateless.htm>`_
   for more information).
 
-*aio-sf-streaming* only support Python 3.6 for now.
+*aio-sf-streaming* only support Python 3.6.
 
 
 Getting started
@@ -80,7 +81,7 @@ Simple use case:
                 else:
                     # You can unsubscribe when you want, too
                     await client.unsubscribe('/topic/Foo')
-  
+
     loop = asyncio.get_event_loop()
     loop.run_until_complete(print_event())
 
@@ -104,9 +105,8 @@ An `online documentation is available <https://github.com/papernest-public/aio_s
 Evolution
 ---------
 
-The library work well for our use-case then we does not plan a lot of new 
-features. The only planned feature is the addition of the OAuth2 browser flow
-`refresh_token` for authentication instead of user name and passwords.
+The library work well for our use-case then we does not plan a lot of new
+features.
 
 
 Contributing
@@ -124,6 +124,7 @@ You can install development dependencies with:
 Release history
 ---------------
 
+- **v. 0.2.0**: Add refresh token authentication
 - **v. 0.1.1**: Add documentation and initial typing information.
 - **v. 0.1.0**: Initial release.
 

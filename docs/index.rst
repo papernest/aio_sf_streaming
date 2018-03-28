@@ -55,6 +55,7 @@ Salesforce organization.
 **Main features**
 
 - `asyncio <https://docs.python.org/3/library/asyncio.html>`_ compatible library
+- Authentication with username/password or refresh token
 - Subscribe to push topics and custom events
 - Receive events pushed by Salesforce
 - Auto-reconnect after too many time of inactivity

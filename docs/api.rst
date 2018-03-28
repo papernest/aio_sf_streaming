@@ -100,7 +100,11 @@ Base class
 Connectors
 ----------
 
+.. autoclass:: BaseConnector
+
 .. autoclass:: PasswordSalesforceStreaming
+
+.. autoclass:: RefreshTokenSalesforceStreaming
 
 .. _mixins:
 
