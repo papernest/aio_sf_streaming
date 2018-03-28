@@ -48,6 +48,12 @@ Main Interface
    .. autocomethod:: unsubscribe
    .. autocomethod:: stop
 
+.. autoclass:: SimpleRefreshTokenSalesforceStreaming
+
+   :py:class:`SimpleSalesforceStreaming` inherit all members from their base
+   class. Only main one, for external use, are listed here. See
+   :py:class:`SimpleRefreshTokenSalesforceStreaming`  for method description.
+
 .. _base_class:
 
 Base class
