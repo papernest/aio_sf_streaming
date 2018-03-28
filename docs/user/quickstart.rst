@@ -15,9 +15,11 @@ Code organization
   you can not use it directly, the class lake of connection capability. You
   must use one of the connector implementation.
 - :ref:`connectors` add connection capabilities to
-  :py:class:`BaseSalesforceStreaming` allowing to connect to Salesforce. For
-  now, :py:class:`PasswordSalesforceStreaming` is the only connector provided
-  allowing to connect on Salesforce with `password flow <https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_understanding_username_password_oauth_flow.htm>`_.
+  :py:class:`BaseSalesforceStreaming` allowing to connect to Salesforce.
+  :py:class:`PasswordSalesforceStreaming` allow to connect on Salesforce with 
+  `password flow <https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_understanding_username_password_oauth_flow.htm>`_.
+  :py:class:`RefreshTokenSalesforceStreaming` allow to connect on Salesforce with 
+  `refresh token flow <https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_understanding_refresh_token_oauth.htm>`_.
 - :ref:`mixins` are provided and can be added to concrete implementation to
   provide additional capabilities like `replay support <https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/using_streaming_api_durability.htm>`_
   or use the provided timeout advice. This functionalities can be added
