@@ -138,3 +138,8 @@ def test_missing_parameters():
         RefreshTokenSalesforceStreaming(
             refresh_token="refresh_token",
             client_id="my_client_id")
+
+    with pytest.raises(TypeError):
+        RefreshTokenSalesforceStreaming(
+            client_id="my_client_id",
+            client_secret="my_client_secret")
