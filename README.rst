@@ -99,7 +99,7 @@ Simply use ``pip``:
 Documentation
 -------------
 
-An `online documentation is available <https://github.com/papernest-public/aio_sf_streaming>`_.
+An `online documentation is available <http://aio-sf-streaming.readthedocs.io/en/latest/>`_.
 
 
 Evolution
