@@ -21,32 +21,34 @@ class BaseConnector(BaseSalesforceStreaming):
     See :class:`.BaseSalesforceStreaming` for other keywords arguments.
     """
 
-    def __init__(self, *, client_id: str = None, client_secret: str = None,
-                 login_connector: aiohttp.BaseConnector = None, **kwargs):
+    def __init__(
+        self,
+        *,
+        client_id: str = None,
+        client_secret: str = None,
+        login_connector: aiohttp.BaseConnector = None,
+        **kwargs
+    ):
         if any(v is None for v in (client_id, client_secret)):
             raise TypeError("All credentials arguments are mandatory")
 
         self.login_connector = login_connector
-        self.credentials = {
-            'client_id': client_id,
-            'client_secret': client_secret
-        }
+        self.credentials = {"client_id": client_id, "client_secret": client_secret}
         super().__init__(**kwargs)
 
     async def fetch_token(self) -> Tuple[str, str]:
         # use a temporary session only to fetch token because client session
         # does not seems to allow update default headers on a already created
         # session
-        async with aiohttp.ClientSession(connector=self.login_connector,
-                                         headers=self.base_header,
-                                         loop=self.loop) as session:
-            async with session.post(self.token_url,
-                                    data=self.credentials) as resp:
+        async with aiohttp.ClientSession(
+            connector=self.login_connector, headers=self.base_header, loop=self.loop
+        ) as session:
+            async with session.post(self.token_url, data=self.credentials) as resp:
                 data = await resp.json()
 
-        assert data['token_type'] == 'Bearer'
-        instance_url = data['instance_url']
-        access_token = data['access_token']
+        assert data["token_type"] == "Bearer"
+        instance_url = data["instance_url"]
+        access_token = data["access_token"]
 
         return access_token, instance_url
 
@@ -63,18 +65,15 @@ class PasswordSalesforceStreaming(BaseConnector):
     See :class:`.BaseConnector` for other keywords arguments.
     """
 
-    def __init__(self, *, username: str = None, password: str = None,
-                 **kwargs):
+    def __init__(self, *, username: str = None, password: str = None, **kwargs):
         if any(v is None for v in (username, password)):
             raise TypeError("All credentials arguments are mandatory")
 
         super().__init__(**kwargs)
         # Credentials used to fetch access token
-        self.credentials.update({
-            'grant_type': 'password',
-            'username': username,
-            'password': password,
-        })
+        self.credentials.update(
+            {"grant_type": "password", "username": username, "password": password}
+        )
 
 
 class RefreshTokenSalesforceStreaming(BaseConnector):
@@ -94,7 +93,6 @@ class RefreshTokenSalesforceStreaming(BaseConnector):
 
         super().__init__(**kwargs)
         # Credentials used to fetch access token
-        self.credentials.update({
-            'grant_type': 'refresh_token',
-            'refresh_token': refresh_token,
-        })
+        self.credentials.update(
+            {"grant_type": "refresh_token", "refresh_token": refresh_token}
+        )

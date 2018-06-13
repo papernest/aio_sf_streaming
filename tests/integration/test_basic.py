@@ -193,17 +193,17 @@ async def test_basic_flow(event_loop, fake_sf_session):
         Replay(
             channel='/topic/Foo',
             replay_id=1,
-            creation_time=datetime.datetime(2018, 3, 15, 13, 42, 1)),
+            creation_time='2018-03-15T13:42:01'),
         Replay(
             channel='/topic/Bar',
             replay_id=2,
-            creation_time=datetime.datetime(2018, 3, 15, 13, 42, 4)),
+            creation_time='2018-03-15T13:42:04'),
         Replay(
             channel='/topic/Bar',
             replay_id=1,
-            creation_time=datetime.datetime(2018, 3, 15, 13, 42, 2)),
+            creation_time='2018-03-15T13:42:02'),
         Replay(
             channel='/topic/Foo',
             replay_id=2,
-            creation_time=datetime.datetime(2018, 3, 15, 13, 42, 3))
+            creation_time='2018-03-15T13:42:03')
     }

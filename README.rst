@@ -99,7 +99,7 @@ Simply use ``pip``:
 Documentation
 -------------
 
-An `online documentation is available <https://github.com/papernest-public/aio_sf_streaming>`_.
+An `online documentation is available <http://aio-sf-streaming.readthedocs.io/en/latest/>`_.
 
 
 Evolution
@@ -124,6 +124,9 @@ You can install development dependencies with:
 Release history
 ---------------
 
+- **v. 0.3.0**: Remove date-time parsing of the replay mixin, allow client to
+  customize ``ReSubscribeMixin`` retry conditions, allow retry conditions to
+  extend duration.
 - **v. 0.2.0**: Add refresh token authentication
 - **v. 0.1.1**: Add documentation and initial typing information.
 - **v. 0.1.0**: Initial release.
