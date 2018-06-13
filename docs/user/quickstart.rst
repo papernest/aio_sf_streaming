@@ -168,7 +168,7 @@ method is called with three arguments:
 
 - the channel,
 - the replay id,
-- the object creation time.
+- the object creation time (the string provided by SF).
 
 For each channel, this function should store the replay id of the last created
 object.
@@ -192,6 +192,7 @@ should store this id in a persistent way:
             # we does not want to store the replay id if a most recent one is
             # already stored
             last_storage = self.replays.get(channel, None)
+            creation_time = parse_time(creation_time)       # Custom function to implement
             if last_storage and last_storage[0] > creation_time:
                 return
             self.replays[channel] = (creation_time, replay_id)

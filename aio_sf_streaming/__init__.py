@@ -13,7 +13,6 @@ from .connectors import (BaseConnector, PasswordSalesforceStreaming,
 from .mixins import (TimeoutAdviceMixin, AutoVersionMixin, ReplayMixin,
                      ReplayType, AutoReconnectMixin, ReSubscribeMixin,
                      AllMixin)
-from .utils import parse_sf_datetime
 from .__version__ import __version__
 
 

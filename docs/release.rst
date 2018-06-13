@@ -3,6 +3,8 @@
 Release notes
 =============
 
+v. 0.3.0
+    Remove date-time parsing of the replay mixin.
 v. 0.2.0
     Minor release : Add refresh token authentication
 v. 0.1.1

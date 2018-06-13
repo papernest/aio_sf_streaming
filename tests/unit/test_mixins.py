@@ -201,18 +201,18 @@ async def test_replay_message(mock_send, mock_store_replay):
     await wait_until_all_completed()
     assert mock_store_replay.call_count == 12
     assert mock_store_replay.mock_calls == [
-        call('/topic/Foo0', 1, dt.datetime(2018, 3, 14, 11, 58, 42)),
-        call('/topic/Foo1', 1, dt.datetime(2018, 3, 14, 11, 58, 43)),
-        call('/topic/Foo0', 2, dt.datetime(2018, 3, 14, 11, 58, 44)),
-        call('/topic/Foo1', 2, dt.datetime(2018, 3, 14, 11, 58, 45)),
-        call('/topic/Foo2', 1, dt.datetime(2018, 3, 14, 11, 58, 46)),
-        call('/topic/Foo0', 3, dt.datetime(2018, 3, 14, 11, 58, 47)),
-        call('/topic/Foo0', 4, dt.datetime(2018, 3, 14, 11, 58, 48)),
-        call('/topic/Foo1', 3, dt.datetime(2018, 3, 14, 11, 58, 49)),
-        call('/topic/Foo0', 5, dt.datetime(2018, 3, 14, 11, 58, 50)),
-        call('/topic/Foo1', 4, dt.datetime(2018, 3, 14, 11, 58, 51)),
-        call('/topic/Foo2', 2, dt.datetime(2018, 3, 14, 11, 58, 52)),
-        call('/topic/Foo0', 6, dt.datetime(2018, 3, 14, 11, 58, 53)),
+        call('/topic/Foo0', 1, '2018-03-14T11:58:42.1234Z'),
+        call('/topic/Foo1', 1, '2018-03-14T11:58:43.1234Z'),
+        call('/topic/Foo0', 2, '2018-03-14T11:58:44.1234Z'),
+        call('/topic/Foo1', 2, '2018-03-14T11:58:45.1234Z'),
+        call('/topic/Foo2', 1, '2018-03-14T11:58:46.1234Z'),
+        call('/topic/Foo0', 3, '2018-03-14T11:58:47.1234Z'),
+        call('/topic/Foo0', 4, '2018-03-14T11:58:48.1234Z'),
+        call('/topic/Foo1', 3, '2018-03-14T11:58:49.1234Z'),
+        call('/topic/Foo0', 5, '2018-03-14T11:58:50.1234Z'),
+        call('/topic/Foo1', 4, '2018-03-14T11:58:51.1234Z'),
+        call('/topic/Foo2', 2, '2018-03-14T11:58:52.1234Z'),
+        call('/topic/Foo0', 6, '2018-03-14T11:58:53.1234Z'),
     ]
 
 

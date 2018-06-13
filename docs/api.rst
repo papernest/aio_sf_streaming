@@ -136,8 +136,3 @@ Mixins
 
 .. _utils:
 
-Utils
------
-
-.. autofunction:: parse_sf_datetime
-

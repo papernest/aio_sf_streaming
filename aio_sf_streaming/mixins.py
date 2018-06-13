@@ -8,7 +8,6 @@ import logging
 from typing import Union
 
 from .core import JSONObject, JSONList
-from .utils import parse_sf_datetime
 
 logger = logging.getLogger('aio_sf_streaming')
 
@@ -92,7 +91,7 @@ class ReplayMixin:
             if not channel.startswith('/meta/'):
                 event = message['data']['event']
                 replay_id = event['replayId']
-                creation_time = parse_sf_datetime(event['createdDate'])
+                creation_time = event['createdDate']
 
                 # Create a task : do not wait the replay id is stored to
                 # reconnect as soon as possible
@@ -100,8 +99,7 @@ class ReplayMixin:
                     self.store_replay_id(channel, replay_id, creation_time))
             yield message
 
-    async def store_replay_id(self, channel: str, replay_id: int,
-                              creation_time: datetime.datetime) -> None:
+    async def store_replay_id(self, channel: str, replay_id: int, creation_time: str) -> None:
         """
         Callback called to store a replay id. You should override this method
         to implement your custom logic.
@@ -110,7 +108,7 @@ class ReplayMixin:
         :param replay_id: replay id to store
         :param creation_time: Creation time. You should store only the last
             created object but you can not know if you received event in order
-            without this.
+            without this. This value is the string provided by SF.
         """
 
     async def get_last_replay_id(self, channel: str) -> Union[ReplayType, int]:
