@@ -209,12 +209,28 @@ class ReSubscribeMixin:
     Mixin that handle subscription error, will try again after a short delay
 
     :param retry_sub_duration: Duration between subscribe retry if server is
-        too buzy.
+        too buzy (initial value).
+    :param retry_factor: Factor amplification between each successive retry
+    :param retry_max_duration: Maximum value of the retry duration
+    :param retry_max_count: Maximum count of retry, after this count is reach,
+        response or exception are propagated.
     """
 
-    def __init__(self, retry_sub_duration: float = 0.1, **kwargs):
+    def __init__(
+        self,
+        retry_sub_duration: float = 0.1,
+        retry_factor: float = 1.,
+        retry_max_duration: float = 30.,
+        retry_max_count: int = 20,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self.retry_sub_duration = retry_sub_duration
+        self.retry_factor = retry_factor
+        self.retry_max_duration = retry_max_duration
+        self.retry_max_count = retry_max_count
+        self.retry_current_duration = {}
+        self.retry_current_count = {}
 
     async def should_retry_on_exception(self, channel: str, exception: Exception) -> bool:
         """
@@ -248,6 +264,21 @@ class ReSubscribeMixin:
             .startswith("SERVER_UNAVAILABLE")
         )
 
+    def _update_retry_count(self, channel: str) -> bool:
+        """
+        Update retry count for the channel. Return a boolean if we should retry
+        """
+        self.retry_current_count[channel] = self.retry_current_count.get(channel, 0) + 1
+        if self.retry_current_count[channel] >= self.retry_max_count:
+            return False
+        duration = self.retry_current_duration.get(channel, -1)
+        if duration < 0:
+            duration = self.retry_sub_duration
+        else:
+            duration = min(duration * self.retry_factor, self.retry_max_count)
+        self.retry_current_duration[channel] = duration
+        return True
+
     async def subscribe(self, channel: str) -> JSONList:
         """
         See :py:func:`BaseSalesforceStreaming.subscribe`
@@ -257,18 +288,24 @@ class ReSubscribeMixin:
                 response = await super().subscribe(channel)
             except Exception as e:
                 should_retry = await self.should_retry_on_exception(channel, e)
+                if should_retry:
+                    should_retry = self._update_retry_count(channel)
                 if not should_retry:
                     raise
             else:
                 if response and response[0]["successful"]:
-                    return response
+                    should_retry = False
                 else:
                     should_retry = await self.should_retry_on_error_response(channel, response)
+                    if should_retry:
+                        should_retry = self._update_retry_count(channel)
 
             if not should_retry:
+                self.retry_current_duration[channel] = -1
+                self.retry_current_count[channel] = 0
                 return response
 
-            await asyncio.sleep(self.retry_sub_duration)
+            await asyncio.sleep(self.retry_current_duration[channel])
 
 
 class AllMixin(

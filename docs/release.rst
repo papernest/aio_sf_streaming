@@ -6,6 +6,7 @@ Release notes
 v. 0.3.0
     - Remove date-time parsing of the replay mixin.
     - Allow client to customize ``ReSubscribeMixin`` retry conditions.
+    - Allow client to customize ``ReSubscribeMixin`` retry duration evolution.
 v. 0.2.0
     Minor release : Add refresh token authentication
 v. 0.1.1
