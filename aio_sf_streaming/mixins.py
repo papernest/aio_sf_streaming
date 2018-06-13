@@ -2,7 +2,6 @@
 Mixins module: Provide various mixins modules
 """
 import asyncio
-import datetime
 import enum
 import logging
 from typing import Union
@@ -95,14 +94,10 @@ class ReplayMixin:
 
                 # Create a task : do not wait the replay id is stored to
                 # reconnect as soon as possible
-                self.loop.create_task(
-                    self.store_replay_id(channel, replay_id, creation_time)
-                )
+                self.loop.create_task(self.store_replay_id(channel, replay_id, creation_time))
             yield message
 
-    async def store_replay_id(
-        self, channel: str, replay_id: int, creation_time: str
-    ) -> None:
+    async def store_replay_id(self, channel: str, replay_id: int, creation_time: str) -> None:
         """
         Callback called to store a replay id. You should override this method
         to implement your custom logic.
@@ -175,10 +170,7 @@ class AutoReconnectMixin:
             channel = message["channel"]
 
             # If asked, perform a new handshake
-            if (
-                channel.startswith("/meta/")
-                and message.get("error") == "403::Unknown client"
-            ):
+            if channel.startswith("/meta/") and message.get("error") == "403::Unknown client":
                 logger.info("Disconnected, do new handshake")
                 await self.handshake()
                 continue
@@ -224,25 +216,58 @@ class ReSubscribeMixin:
         super().__init__(**kwargs)
         self.retry_sub_duration = retry_sub_duration
 
+    async def should_retry_on_exception(self, channel: str, exception: Exception) -> bool:
+        """
+        Callback called to process an exception raised during subscription.
+        Return a boolean if we must retry. If ``False`` is returned, the exception will be
+        propagated to caller.
+
+        By-default, do return always ``False``.
+
+        :param channel: Channel name
+        :param exception: The exception raised
+        """
+        return False
+
+    async def should_retry_on_error_response(self, channel: str, response: JSONObject) -> bool:
+        """
+        Callback called to process a response with and error message.
+        Return a boolean if we must retry. If ``False`` is returned, the response will be
+        returned to caller.
+
+        By-default, retry on known 'server unavailable' response.
+
+        :param channel: Channel name
+        :param response: The response received
+        """
+        return (
+            response[0]
+            .get("ext", {})
+            .get("sfdc", {})
+            .get("failureReason", "")
+            .startswith("SERVER_UNAVAILABLE")
+        )
+
     async def subscribe(self, channel: str) -> JSONList:
         """
         See :py:func:`BaseSalesforceStreaming.subscribe`
         """
         while True:
-            response = await super().subscribe(channel)
+            try:
+                response = await super().subscribe(channel)
+            except Exception as e:
+                should_retry = await self.should_retry_on_exception(channel, e)
+                if not should_retry:
+                    raise
+            else:
+                if response and response[0]["successful"]:
+                    return response
+                else:
+                    should_retry = await self.should_retry_on_error_response(channel, response)
 
-            if not response or response[0]["successful"]:
+            if not should_retry:
                 return response
 
-            # If not the known error, return
-            if not (
-                response[0]
-                .get("ext", {})
-                .get("sfdc", {})
-                .get("failureReason", "")
-                .startswith("SERVER_UNAVAILABLE")
-            ):
-                return response
             await asyncio.sleep(self.retry_sub_duration)
 
 

@@ -21,10 +21,8 @@ The package is separated in 5 mains modules:
 - To authenticate on Salesforce, you must use one connector that add
   authentication capability to :py:class:`BaseSalesforceStreaming`. See
   :ref:`connectors` section for a list of available connectors.
-- :ref:`mixins` extend :py:class:`BaseSalesforceStreaming` capabilities and
+- Finally, :ref:`mixins` extend :py:class:`BaseSalesforceStreaming` capabilities and
   can be added easily as opt-in option by sub classing.
-- Finally, :ref:`utils` provide some internal utilities functions.
-
 
 .. _main_interface:
 
@@ -132,7 +130,5 @@ Mixins
 .. autoclass:: AutoReconnectMixin
 
 .. autoclass:: ReSubscribeMixin
-
-
-.. _utils:
+   :members: should_retry_on_exception, should_retry_on_error_response
 
