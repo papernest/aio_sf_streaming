@@ -5,11 +5,11 @@ import abc
 import asyncio
 import copy
 import logging
-from typing import Optional, Dict, List, Union, Any, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import aiohttp
 
-logger = logging.getLogger('aio_sf_streaming')
+logger = logging.getLogger("aio_sf_streaming")
 
 # Typing utils
 JSONObject = Dict[str, Any]
@@ -43,24 +43,28 @@ class BaseSalesforceStreaming(abc.ABC):
 
     See :py:class:`SimpleSalesforceStreaming` for an usage example.
     """
-    version: str                                #: SF api version to use
-    sandbox: bool                               #: Use test server
-    connector: aiohttp.BaseConnector            #: aiohttp connector for main session
-    instance_url: Optional[str]                 #: Instance url (retrieved with token)
-    session: Optional[aiohttp.ClientSession]    #: Underlying connection
-    client_id: Optional[str]                    #: The client id token from handshake
-    message_count: int                          #: Message id count
-    timeout: int                                #: Timeout connection duration
-    should_stop: bool                           #: Set to True to stop streaming
+
+    version: str  #: SF api version to use
+    sandbox: bool  #: Use test server
+    connector: aiohttp.BaseConnector  #: aiohttp connector for main session
+    instance_url: Optional[str]  #: Instance url (retrieved with token)
+    session: Optional[aiohttp.ClientSession]  #: Underlying connection
+    client_id: Optional[str]  #: The client id token from handshake
+    message_count: int  #: Message id count
+    timeout: int  #: Timeout connection duration
+    should_stop: bool  #: Set to True to stop streaming
 
     #: Header used in all requests
-    base_header: dict = {'Accept': 'application/json'}
+    base_header: dict = {"Accept": "application/json"}
 
-    def __init__(self, *,
-                 sandbox: bool = False,
-                 version: str = '42.0',
-                 loop: asyncio.AbstractEventLoop = None,
-                 connector: aiohttp.BaseConnector = None) -> None:
+    def __init__(
+        self,
+        *,
+        sandbox: bool = False,
+        version: str = "42.0",
+        loop: asyncio.AbstractEventLoop = None,
+        connector: aiohttp.BaseConnector = None,
+    ) -> None:
         self.version = version
         self.sandbox = sandbox
         self._loop = loop
@@ -126,9 +130,9 @@ class BaseSalesforceStreaming(abc.ABC):
             if self.should_stop:
                 return
             try:
-                response = await self.send({
-                    'channel': '/meta/connect',
-                    'connectionType': 'long-polling'})
+                response = await self.send(
+                    {"channel": "/meta/connect", "connectionType": "long-polling"}
+                )
             except asyncio.TimeoutError:
                 logger.info("Timeout")
                 continue
@@ -163,7 +167,7 @@ class BaseSalesforceStreaming(abc.ABC):
         channels you subscribed.
         """
         async for message in self.messages():
-            if not message.get('channel', '').startswith('/meta/'):
+            if not message.get("channel", "").startswith("/meta/"):
                 yield message
 
     async def ask_stop(self) -> None:
@@ -217,8 +221,8 @@ class BaseSalesforceStreaming(abc.ABC):
         """
         The url that should be used to fetch an access token.
         """
-        url_prefix = 'test' if self.sandbox else 'login'
-        return f'https://{url_prefix}.salesforce.com/services/oauth2/token'
+        url_prefix = "test" if self.sandbox else "login"
+        return f"https://{url_prefix}.salesforce.com/services/oauth2/token"
 
     @abc.abstractmethod
     async def fetch_token(self) -> Tuple[str, str]:
@@ -234,10 +238,11 @@ class BaseSalesforceStreaming(abc.ABC):
         token, self.instance_url = await self.fetch_token()
 
         base_header = copy.deepcopy(self.base_header)
-        base_header.update({'Authorization': f"Bearer {token}"})
+        base_header.update({"Authorization": f"Bearer {token}"})
 
         session = aiohttp.ClientSession(
-            connector=self.connector, headers=base_header, loop=self.loop)
+            connector=self.connector, headers=base_header, loop=self.loop
+        )
         return session
 
     async def close_session(self) -> None:
@@ -256,32 +261,30 @@ class BaseSalesforceStreaming(abc.ABC):
         """
         Cometd endpoint
         """
-        return f'/cometd/{self.version}/'
+        return f"/cometd/{self.version}/"
 
     async def get_handshake_payload(self) -> JSONObject:
         """
         Provide the handshake payload
         """
         return {
-            'channel': '/meta/handshake',
-            'supportedConnectionTypes': ['long-polling'],
-            'version': '1.0',
-            'minimumVersion': '1.0'
+            "channel": "/meta/handshake",
+            "supportedConnectionTypes": ["long-polling"],
+            "version": "1.0",
+            "minimumVersion": "1.0",
         }
 
     async def get_subscribe_payload(self, channel: str) -> JSONObject:
         """
         Provide the subscription payload for a specific channel
         """
-        return {'channel': '/meta/subscribe',
-                'subscription': channel}
+        return {"channel": "/meta/subscribe", "subscription": channel}
 
     async def get_unsubscribe_payload(self, channel: str) -> JSONObject:
         """
         Provide the unsubscription payload for a specific channel
         """
-        return {'channel': '/meta/unsubscribe',
-                'subscription': channel}
+        return {"channel": "/meta/unsubscribe", "subscription": channel}
 
     async def send(self, data: JSONObject) -> JSONType:
         """
@@ -295,9 +298,9 @@ class BaseSalesforceStreaming(abc.ABC):
 
         # Add  id and client_id to payload
         data = copy.copy(data)
-        data['id'] = str(self.message_count)
+        data["id"] = str(self.message_count)
         if self.client_id:
-            data['clientId'] = self.client_id
+            data["clientId"] = self.client_id
 
         # Post data
         return await self.post(self.end_point, json=data)
@@ -310,7 +313,7 @@ class BaseSalesforceStreaming(abc.ABC):
 
         response = await self.send(await self.get_handshake_payload())
         logger.info("Handshake response: %r", response)
-        self.client_id = response[0]['clientId']
+        self.client_id = response[0]["clientId"]
 
         return response
 
@@ -318,7 +321,7 @@ class BaseSalesforceStreaming(abc.ABC):
         """
         Disconnect from the SF streaming server
         """
-        return await self.send({'channel': '/meta/disconnect'})
+        return await self.send({"channel": "/meta/disconnect"})
 
     # -------------------- IO layer helpers --------------------
 
@@ -329,7 +332,7 @@ class BaseSalesforceStreaming(abc.ABC):
             response = await.client.get('/myendpoint/')
 
         """
-        return await self.request('get', sub_url, **kwargs)
+        return await self.request("get", sub_url, **kwargs)
 
     async def post(self, sub_url: str, **kwargs) -> JSONType:
         """
@@ -338,17 +341,18 @@ class BaseSalesforceStreaming(abc.ABC):
             response = await.client.post('/myendpoint/', json={'data': 'foo'})
 
         """
-        return await self.request('post', sub_url, **kwargs)
+        return await self.request("post", sub_url, **kwargs)
 
     async def request(self, method: str, sub_url: str, **kwargs) -> JSONType:
         """
         Perform a simple json request from an internal url
         """
-        url = f'{self.instance_url}{sub_url}'
+        url = f"{self.instance_url}{sub_url}"
         logger.info("Perform %r to %r with %r", method, url, kwargs)
 
-        async with self.session.request(method, url, timeout=self.timeout,
-                                        **kwargs) as resp:
+        async with self.session.request(
+            method, url, timeout=self.timeout, **kwargs
+        ) as resp:
             resp.raise_for_status()
             data = await resp.json()
 

@@ -8,18 +8,24 @@ Python 3.6+
 import asyncio
 import aiohttp
 from .core import BaseSalesforceStreaming
-from .connectors import (BaseConnector, PasswordSalesforceStreaming,
-                         RefreshTokenSalesforceStreaming)
-from .mixins import (TimeoutAdviceMixin, AutoVersionMixin, ReplayMixin,
-                     ReplayType, AutoReconnectMixin, ReSubscribeMixin,
-                     AllMixin)
+from .connectors import (
+    BaseConnector,
+    PasswordSalesforceStreaming,
+    RefreshTokenSalesforceStreaming,
+)
+from .mixins import (
+    TimeoutAdviceMixin,
+    AutoVersionMixin,
+    ReplayMixin,
+    ReplayType,
+    AutoReconnectMixin,
+    ReSubscribeMixin,
+    AllMixin,
+)
 from .__version__ import __version__
 
 
-
-class SimpleSalesforceStreaming(
-        AllMixin,
-        PasswordSalesforceStreaming):   # Password flow
+class SimpleSalesforceStreaming(AllMixin, PasswordSalesforceStreaming):  # Password flow
     """
     A simple helper class providing all-in-one functionalities.
 
@@ -68,27 +74,38 @@ class SimpleSalesforceStreaming(
         loop.run_until_complete(print_event())
 
     """
-    def __init__(self,
-                 username: str,
-                 password: str,
-                 client_id: str,
-                 client_secret: str, *,
-                 sandbox: bool = False,
-                 version: str = '42.0',
-                 loop: asyncio.AbstractEventLoop = None,
-                 connector: aiohttp.BaseConnector = None,
-                 login_connector: aiohttp.BaseConnector = None,
-                 retry_sub_duration: float = 0.1) -> None:
+
+    def __init__(
+        self,
+        username: str,
+        password: str,
+        client_id: str,
+        client_secret: str,
+        *,
+        sandbox: bool = False,
+        version: str = "42.0",
+        loop: asyncio.AbstractEventLoop = None,
+        connector: aiohttp.BaseConnector = None,
+        login_connector: aiohttp.BaseConnector = None,
+        retry_sub_duration: float = 0.1
+    ) -> None:
         super().__init__(
-            username=username, password=password, client_id=client_id,
-            client_secret=client_secret, sandbox=sandbox, version=version,
-            loop=loop, connector=connector, login_connector=login_connector,
-            retry_sub_duration=retry_sub_duration)
+            username=username,
+            password=password,
+            client_id=client_id,
+            client_secret=client_secret,
+            sandbox=sandbox,
+            version=version,
+            loop=loop,
+            connector=connector,
+            login_connector=login_connector,
+            retry_sub_duration=retry_sub_duration,
+        )
 
 
 class SimpleRefreshTokenSalesforceStreaming(
-        AllMixin,
-        RefreshTokenSalesforceStreaming):   # Refresh token flow
+    AllMixin, RefreshTokenSalesforceStreaming
+):  # Refresh token flow
     """
     A simple helper class providing all-in-one functionalities.
 
@@ -135,18 +152,28 @@ class SimpleRefreshTokenSalesforceStreaming(
         loop.run_until_complete(print_event())
 
     """
-    def __init__(self,
-                 refresh_token: str,
-                 client_id: str,
-                 client_secret: str, *,
-                 sandbox: bool = False,
-                 version: str = '42.0',
-                 loop: asyncio.AbstractEventLoop = None,
-                 connector: aiohttp.BaseConnector = None,
-                 login_connector: aiohttp.BaseConnector = None,
-                 retry_sub_duration: float = 0.1) -> None:
+
+    def __init__(
+        self,
+        refresh_token: str,
+        client_id: str,
+        client_secret: str,
+        *,
+        sandbox: bool = False,
+        version: str = "42.0",
+        loop: asyncio.AbstractEventLoop = None,
+        connector: aiohttp.BaseConnector = None,
+        login_connector: aiohttp.BaseConnector = None,
+        retry_sub_duration: float = 0.1
+    ) -> None:
         super().__init__(
-            refresh_token=refresh_token, client_id=client_id,
-            client_secret=client_secret, sandbox=sandbox, version=version,
-            loop=loop, connector=connector, login_connector=login_connector,
-            retry_sub_duration=retry_sub_duration)
+            refresh_token=refresh_token,
+            client_id=client_id,
+            client_secret=client_secret,
+            sandbox=sandbox,
+            version=version,
+            loop=loop,
+            connector=connector,
+            login_connector=login_connector,
+            retry_sub_duration=retry_sub_duration,
+        )

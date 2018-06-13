@@ -7,9 +7,9 @@ import enum
 import logging
 from typing import Union
 
-from .core import JSONObject, JSONList
+from .core import JSONList, JSONObject
 
-logger = logging.getLogger('aio_sf_streaming')
+logger = logging.getLogger("aio_sf_streaming")
 
 
 class TimeoutAdviceMixin:
@@ -23,9 +23,8 @@ class TimeoutAdviceMixin:
         See :py:func:`BaseSalesforceStreaming.messages`
         """
         async for message in super().messages():
-            if (message.get('channel', '') == '/meta/connect'
-                    and 'advice' in message):
-                timeout_advice = message['advice'].get('timeout', None)
+            if message.get("channel", "") == "/meta/connect" and "advice" in message:
+                timeout_advice = message["advice"].get("timeout", None)
                 if timeout_advice:
                     self.timeout = timeout_advice / 1000
             yield message
@@ -35,8 +34,9 @@ class ReplayType(enum.Enum):
     """
     Enumeration with special replay values
     """
-    ALL_EVENTS = -2     #: Replay all events available.
-    NEW_EVENTS = -1     #: No replay, retrieve only new events.
+
+    ALL_EVENTS = -2  #: Replay all events available.
+    NEW_EVENTS = -1  #: No replay, retrieve only new events.
 
 
 class ReplayMixin:
@@ -53,7 +53,7 @@ class ReplayMixin:
         """
         payload = await super().get_handshake_payload()
         # Activate replay extension
-        payload.setdefault('ext', {}).update({'replay': True})
+        payload.setdefault("ext", {}).update({"replay": True})
         return payload
 
     async def get_subscribe_payload(self, channel: str) -> JSONObject:
@@ -75,8 +75,8 @@ class ReplayMixin:
         replay_id = int(replay_id)
 
         # Update payload
-        payload.setdefault('ext', {}).setdefault('replay', {})
-        payload['ext']['replay'][channel] = replay_id
+        payload.setdefault("ext", {}).setdefault("replay", {})
+        payload["ext"]["replay"][channel] = replay_id
 
         return payload
 
@@ -85,21 +85,24 @@ class ReplayMixin:
         See :py:func:`BaseSalesforceStreaming.messages`
         """
         async for message in super().messages():
-            channel = message['channel']
+            channel = message["channel"]
 
             # On new message, call callback to store replay id
-            if not channel.startswith('/meta/'):
-                event = message['data']['event']
-                replay_id = event['replayId']
-                creation_time = event['createdDate']
+            if not channel.startswith("/meta/"):
+                event = message["data"]["event"]
+                replay_id = event["replayId"]
+                creation_time = event["createdDate"]
 
                 # Create a task : do not wait the replay id is stored to
                 # reconnect as soon as possible
                 self.loop.create_task(
-                    self.store_replay_id(channel, replay_id, creation_time))
+                    self.store_replay_id(channel, replay_id, creation_time)
+                )
             yield message
 
-    async def store_replay_id(self, channel: str, replay_id: int, creation_time: str) -> None:
+    async def store_replay_id(
+        self, channel: str, replay_id: int, creation_time: str
+    ) -> None:
         """
         Callback called to store a replay id. You should override this method
         to implement your custom logic.
@@ -130,9 +133,9 @@ class AutoVersionMixin:
         See :py:func:`BaseSalesforceStreaming.handshake`
         """
         # Get last api version
-        data = await self.get('/services/data/')
+        data = await self.get("/services/data/")
         try:
-            self.version = data[-1]['version']
+            self.version = data[-1]["version"]
         except (IndexError, KeyError):
             pass
         logger.info("API version used: %r", self.version)
@@ -169,11 +172,13 @@ class AutoReconnectMixin:
         See :py:func:`BaseSalesforceStreaming.messages`
         """
         async for message in super().messages():
-            channel = message['channel']
+            channel = message["channel"]
 
             # If asked, perform a new handshake
-            if (channel.startswith('/meta/') and
-                    message.get('error') == '403::Unknown client'):
+            if (
+                channel.startswith("/meta/")
+                and message.get("error") == "403::Unknown client"
+            ):
                 logger.info("Disconnected, do new handshake")
                 await self.handshake()
                 continue
@@ -214,6 +219,7 @@ class ReSubscribeMixin:
     :param retry_sub_duration: Duration between subscribe retry if server is
         too buzy.
     """
+
     def __init__(self, retry_sub_duration: float = 0.1, **kwargs):
         super().__init__(**kwargs)
         self.retry_sub_duration = retry_sub_duration
@@ -225,24 +231,28 @@ class ReSubscribeMixin:
         while True:
             response = await super().subscribe(channel)
 
-            if not response or response[0]['successful']:
+            if not response or response[0]["successful"]:
                 return response
 
             # If not the known error, return
-            if not (response[0].get('ext', {})
-                               .get('sfdc', {})
-                               .get('failureReason', '')
-                               .startswith('SERVER_UNAVAILABLE')):
+            if not (
+                response[0]
+                .get("ext", {})
+                .get("sfdc", {})
+                .get("failureReason", "")
+                .startswith("SERVER_UNAVAILABLE")
+            ):
                 return response
             await asyncio.sleep(self.retry_sub_duration)
 
 
 class AllMixin(
-        TimeoutAdviceMixin,             # Use SF timeout advice
-        AutoVersionMixin,               # Auto-fetch last api version
-        ReplayMixin,                    # Add replay support
-        AutoReconnectMixin,             # Add auto-reconnection feature
-        ReSubscribeMixin):              # Handle subscription errors
+    TimeoutAdviceMixin,  # Use SF timeout advice
+    AutoVersionMixin,  # Auto-fetch last api version
+    ReplayMixin,  # Add replay support
+    AutoReconnectMixin,  # Add auto-reconnection feature
+    ReSubscribeMixin,
+):  # Handle subscription errors
     """
     Helper class to add all mixin with one class
     """
