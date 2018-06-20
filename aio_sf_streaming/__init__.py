@@ -44,6 +44,10 @@ class SimpleSalesforceStreaming(AllMixin, PasswordSalesforceStreaming):  # Passw
         used for test purpose.
     :param retry_sub_duration: Duration between subscribe retry if server is
         too buzy.
+    :param retry_factor: Factor amplification between each successive retry
+    :param retry_max_duration: Maximum value of the retry duration
+    :param retry_max_count: Maximum count of retry, after this count is reach,
+        response or exception are propagated.
 
     **Usage example**::
 
@@ -87,7 +91,10 @@ class SimpleSalesforceStreaming(AllMixin, PasswordSalesforceStreaming):  # Passw
         loop: asyncio.AbstractEventLoop = None,
         connector: aiohttp.BaseConnector = None,
         login_connector: aiohttp.BaseConnector = None,
-        retry_sub_duration: float = 0.1
+        retry_sub_duration: float = 0.1,
+        retry_factor: float = 1.,
+        retry_max_duration: float = 30.,
+        retry_max_count: int = 20,
     ) -> None:
         super().__init__(
             username=username,
@@ -100,6 +107,9 @@ class SimpleSalesforceStreaming(AllMixin, PasswordSalesforceStreaming):  # Passw
             connector=connector,
             login_connector=login_connector,
             retry_sub_duration=retry_sub_duration,
+            retry_factor=retry_factor,
+            retry_max_duration=retry_max_duration,
+            retry_max_count=retry_max_count,
         )
 
 
@@ -123,6 +133,10 @@ class SimpleRefreshTokenSalesforceStreaming(
         used for test purpose.
     :param retry_sub_duration: Duration between subscribe retry if server is
         too buzy.
+    :param retry_factor: Factor amplification between each successive retry
+    :param retry_max_duration: Maximum value of the retry duration
+    :param retry_max_count: Maximum count of retry, after this count is reach,
+        response or exception are propagated.
 
     **Usage example**::
 
@@ -164,7 +178,10 @@ class SimpleRefreshTokenSalesforceStreaming(
         loop: asyncio.AbstractEventLoop = None,
         connector: aiohttp.BaseConnector = None,
         login_connector: aiohttp.BaseConnector = None,
-        retry_sub_duration: float = 0.1
+        retry_sub_duration: float = 0.1,
+        retry_factor: float = 1.,
+        retry_max_duration: float = 30.,
+        retry_max_count: int = 20,
     ) -> None:
         super().__init__(
             refresh_token=refresh_token,
@@ -176,4 +193,7 @@ class SimpleRefreshTokenSalesforceStreaming(
             connector=connector,
             login_connector=login_connector,
             retry_sub_duration=retry_sub_duration,
+            retry_factor=retry_factor,
+            retry_max_duration=retry_max_duration,
+            retry_max_count=retry_max_count,
         )
