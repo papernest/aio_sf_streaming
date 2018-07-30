@@ -75,6 +75,7 @@ class BaseSalesforceStreaming(abc.ABC):
         self.message_count = 0
         self.timeout = 120
         self.should_stop = False
+        super().__init__()
 
     # -------------------- High level api --------------------
 
