@@ -148,7 +148,7 @@ class BaseSalesforceStreaming(abc.ABC):
             if self.should_stop:
                 return
 
-            logger.info("Messages: received %r", response)
+            logger.debug("Messages: received %r", response)
             for message in response:
                 if self.should_stop:
                     return
@@ -349,7 +349,7 @@ class BaseSalesforceStreaming(abc.ABC):
         Perform a simple json request from an internal url
         """
         url = f"{self.instance_url}{sub_url}"
-        logger.info("Perform %r to %r with %r", method, url, kwargs)
+        logger.debug("Perform %r to %r with %r", method, url, kwargs)
 
         async with self.session.request(
             method, url, timeout=self.timeout, **kwargs
