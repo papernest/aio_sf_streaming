@@ -256,13 +256,14 @@ class ReSubscribeMixin:
         :param channel: Channel name
         :param response: The response received
         """
-        return (
+        failure = (
             response[0]
             .get("ext", {})
             .get("sfdc", {})
             .get("failureReason", "")
-            .startswith("SERVER_UNAVAILABLE")
         )
+        return (failure.startswith("SERVER_UNAVAILABLE")
+                or failure.startswith("503::Server is too busy"))
 
     def _update_retry_count(self, channel: str) -> bool:
         """
