@@ -11,6 +11,10 @@ from .core import JSONList, JSONObject
 logger = logging.getLogger("aio_sf_streaming")
 
 
+class ConnectionError(Exception):
+    ...
+
+
 class TimeoutAdviceMixin:
     """
     Simple mixin that automatically set timeout setting according to SF
@@ -94,10 +98,14 @@ class ReplayMixin:
 
                 # Create a task : do not wait the replay id is stored to
                 # reconnect as soon as possible
-                self.loop.create_task(self.store_replay_id(channel, replay_id, creation_time))
+                self.loop.create_task(
+                    self.store_replay_id(channel, replay_id, creation_time)
+                )
             yield message
 
-    async def store_replay_id(self, channel: str, replay_id: int, creation_time: str) -> None:
+    async def store_replay_id(
+        self, channel: str, replay_id: int, creation_time: str
+    ) -> None:
         """
         Callback called to store a replay id. You should override this method
         to implement your custom logic.
@@ -170,10 +178,15 @@ class AutoReconnectMixin:
             channel = message["channel"]
 
             # If asked, perform a new handshake
-            if channel.startswith("/meta/") and message.get("error") == "403::Unknown client":
-                logger.info("Disconnected, do new handshake")
-                await self.handshake()
-                continue
+            if (
+                channel.startswith("/meta/")
+                and message.get("error") == "403::Unknown client"
+            ):
+                # Need to re-subscribes, not possible with current design, let crash
+                raise ConnectionError()
+                # logger.info("Disconnected, do new handshake")
+                # await self.handshake()
+                # continue
 
             yield message
 
@@ -219,8 +232,8 @@ class ReSubscribeMixin:
     def __init__(
         self,
         retry_sub_duration: float = 0.1,
-        retry_factor: float = 1.,
-        retry_max_duration: float = 30.,
+        retry_factor: float = 1.0,
+        retry_max_duration: float = 30.0,
         retry_max_count: int = 20,
         **kwargs,
     ):
@@ -232,7 +245,9 @@ class ReSubscribeMixin:
         self.retry_current_duration = {}
         self.retry_current_count = {}
 
-    async def should_retry_on_exception(self, channel: str, exception: Exception) -> bool:
+    async def should_retry_on_exception(
+        self, channel: str, exception: Exception
+    ) -> bool:
         """
         Callback called to process an exception raised during subscription.
         Return a boolean if we must retry. If ``False`` is returned, the exception will be
@@ -245,7 +260,9 @@ class ReSubscribeMixin:
         """
         return False
 
-    async def should_retry_on_error_response(self, channel: str, response: JSONObject) -> bool:
+    async def should_retry_on_error_response(
+        self, channel: str, response: JSONObject
+    ) -> bool:
         """
         Callback called to process a response with and error message.
         Return a boolean if we must retry. If ``False`` is returned, the response will be
@@ -256,14 +273,10 @@ class ReSubscribeMixin:
         :param channel: Channel name
         :param response: The response received
         """
-        failure = (
-            response[0]
-            .get("ext", {})
-            .get("sfdc", {})
-            .get("failureReason", "")
+        failure = response[0].get("ext", {}).get("sfdc", {}).get("failureReason", "")
+        return failure.startswith("SERVER_UNAVAILABLE") or failure.startswith(
+            "503::Server is too busy"
         )
-        return (failure.startswith("SERVER_UNAVAILABLE")
-                or failure.startswith("503::Server is too busy"))
 
     def _update_retry_count(self, channel: str) -> bool:
         """
@@ -297,7 +310,9 @@ class ReSubscribeMixin:
                 if response and response[0]["successful"]:
                     should_retry = False
                 else:
-                    should_retry = await self.should_retry_on_error_response(channel, response)
+                    should_retry = await self.should_retry_on_error_response(
+                        channel, response
+                    )
                     if should_retry:
                         should_retry = self._update_retry_count(channel)
 
